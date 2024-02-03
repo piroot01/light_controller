@@ -17,7 +17,8 @@ public:
     void update();
     void setup();
     void printPacket();
-    bool write(const int16_t moduleIndex, uint16_t* data);
+    bool write(const uint16_t moduleIndex, const uint16_t& data);
+    bool read(const uint16_t moduleIndex, uint16_t* data) const;
 
 private:
     Module* m_modules[__MODULE_SIZE__];

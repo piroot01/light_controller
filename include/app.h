@@ -1,11 +1,16 @@
+#ifndef APP_INCLUDED
+#define APP_INCLUDED
+
+
 #include <Arduino.h>
 #include "modules/clock.h"
 #include "modules/modules.h"
+#include "logic.h"
+#include "module_id.h"
 
 
 #define BUTTON_PIN 5
 #define LIGHT_PIN 3
-
 
 class App
 {
@@ -14,15 +19,14 @@ public:
     void setup();
     void run();
 
-    enum class Module
-    {
-        BUTTON = 0,
-        CLOCK = 1,
-        LIGHT = 2
-    };
 
 private:
     Modules m_modules;
-    uint16_t i;
+    Logic m_logic;
+    uint64_t time;
+    uint16_t dummy;
 
 };
+
+
+#endif

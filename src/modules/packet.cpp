@@ -20,6 +20,13 @@ uint16_t* Packet::data()
     return m_data;
 }
 
+
+uint16_t* Packet::data() const
+{
+    return m_data;
+}
+
+
 bool Packet::resize(const uint16_t newSize)
 {
     uint16_t* newData = (uint16_t*)realloc(m_data, newSize * sizeof(uint16_t));

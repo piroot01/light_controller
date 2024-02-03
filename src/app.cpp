@@ -4,8 +4,10 @@
 #include "modules/light.h"
 
 
-App::App()
+App::App() :
+    time(0)
 {
+    dummy = 0;
 }
 
 
@@ -18,16 +20,14 @@ void App::setup()
     m_modules.add(clock);
     m_modules.add(light);
     m_modules.setup();
-    i = 0;
 }
 
 
 void App::run()
 {
+    time = millis();
     m_modules.update();
-    m_modules.printPacket();
-    m_modules.write(2, &i);
-    i++;
-    if (i > 230)
-        i = 0;
+    m_modules.printPacket();;
+    m_logic.loadModules(&m_modules);
+    m_logic.implementation(time);
 }
