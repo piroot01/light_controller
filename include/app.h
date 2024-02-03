@@ -4,6 +4,7 @@
 
 
 #define BUTTON_PIN 5
+#define LIGHT_PIN 3
 
 
 class App
@@ -13,7 +14,15 @@ public:
     void setup();
     void run();
 
+    enum class Module
+    {
+        BUTTON = 0,
+        CLOCK = 1,
+        LIGHT = 2
+    };
+
 private:
     Modules m_modules;
+    uint16_t i;
 
 };

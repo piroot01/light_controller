@@ -1,4 +1,4 @@
-#include "modules.h"
+#include "modules/modules.h"
 #include <Arduino.h>
 
 
@@ -20,7 +20,9 @@ void Modules::add(Module& module)
 void Modules::setup()
 {
     for (int i = 0; i < __MODULE_SIZE__; ++i)
+    {
         m_modules[i]->setup();
+    }
 }
 
 void Modules::update()
@@ -35,4 +37,17 @@ void Modules::printPacket()
     for (int i = 0; i < m_packet.size(); ++i)
         Serial.print(m_packet.data()[i]);
     Serial.println("\n---");
+}
+
+bool Modules::write(const int16_t moduleIndex, uint16_t* data)
+{
+    if (m_modules[moduleIndex]->permission() == Permission::WRITE)
+    {
+        for (int i = 0; i < m_modules[moduleIndex]->packetSize(); ++i)
+            m_packet.data()[m_modules[moduleIndex]->packetIndex() + i] = *(data + i);
+    }
+    else
+    {
+        return false;
+    }
 }

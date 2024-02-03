@@ -1,8 +1,8 @@
-#include "module.h"
+#include "modules/module.h"
 
 
 Module::Module() :
-    m_packetSize(0)
+    m_packetSize(0), m_permission(Permission::READ)
 {
 }
 
@@ -18,7 +18,19 @@ uint16_t Module::packetSize() const
 }
 
 
+uint16_t Module::packetIndex() const
+{
+    return m_packetIndex;
+}
+
+
 void Module::setPacketIndex(const uint16_t index)
 {
     m_packetIndex = index;
+}
+
+
+Permission Module::permission() const
+{
+    return m_permission;
 }

@@ -6,7 +6,7 @@
 #include "packet.h"
 
 
-#define __MODULE_SIZE__ 2
+#define __MODULE_SIZE__ 3
 
 
 class Modules
@@ -17,6 +17,7 @@ public:
     void update();
     void setup();
     void printPacket();
+    bool write(const int16_t moduleIndex, uint16_t* data);
 
 private:
     Module* m_modules[__MODULE_SIZE__];
