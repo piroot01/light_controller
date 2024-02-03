@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "app.h"
 #include "modules/button.h"
 #include "modules/clock.h"

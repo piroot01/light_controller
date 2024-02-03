@@ -1,12 +1,12 @@
 [
 {
   "directory": "/home/piroot/Documents/piroot/git/light_controller/src",
-  "command": "/usr/bin/c++  -I/home/piroot/.platformio/packages/framework-arduino-avr/cores/arduino/ -I/home/piroot/Documents/piroot/git/light_controller/.pio/libdeps/nanoatmega328/DS3231/  -I/home/piroot/.platformio/packages/framework-arduino-avr/libraries/Wire/src/ -I/home/piroot/.platformio/packages/toolchain-atmelavr/avr/include/ -Wall -Wextra -pedantic -O1 -g -std=gnu++20",
+  "command": "/usr/bin/c++  -I/home/piroot/.platformio/packages/framework-arduino-avr/cores/arduino/ -I/home/piroot/Documents/piroot/git/light_controller/.pio/libdeps/nanoatmega328/DS3231/  -I/home/piroot/.platformio/packages/framework-arduino-avr/libraries/Wire/src/ -I/home/piroot/.platformio/packages/toolchain-atmelavr/avr/include/ -I/home/piroot/Documents/piroot/git/light_controller/include/ -Wall -Wextra -pedantic -O1 -g -std=gnu++20",
   "file": "/home/piroot/Documents/piroot/git/light_controller/src/main.cpp",
 }
 {
   "directory": "/home/piroot/Documents/piroot/git/light_controller/src",
-  "command": "/usr/bin/c++  -I/home/piroot/.platformio/packages/framework-arduino-avr/cores/arduino/ -I/home/piroot/Documents/piroot/git/light_controller/.pio/libdeps/nanoatmega328/DS3231/  -I/home/piroot/.platformio/packages/framework-arduino-avr/libraries/Wire/src/ -I/home/piroot/.platformio/packages/toolchain-atmelavr/avr/include/ -Wall -Wextra -pedantic -O1 -g -std=gnu++20",
-  "file": "/home/piroot/Documents/piroot/git/light_controller/src/app.h",
+  "command": "/usr/bin/c++  -I/home/piroot/.platformio/packages/framework-arduino-avr/cores/arduino/ -I/home/piroot/Documents/piroot/git/light_controller/include/ -Wall -Wextra -pedantic -O1 -g -std=gnu++20",
+  "file": "/home/piroot/Documents/piroot/git/light_controller/src/app.cpp",
 }
 ]
