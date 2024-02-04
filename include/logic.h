@@ -9,17 +9,28 @@
 
 
 #define TRANSITION_TIME 1000
+
 #define SUNRISE_TIME_HH 8
 #define SUNSET_TIME_HH 20
 #define FADE_TIME_MM 30
+
 #define LIGHT_ON 255
 #define LIGHT_OFF 0
 
 
-enum States
+enum ControlStates
 {
     AUTO = 0,
     MANUAL = 1
+};
+
+
+enum LightStates
+{
+    OFF = 0,
+    ON = 1,
+    FADE_UP = 2,
+    FADE_DOWN = 3
 };
 
 
@@ -32,10 +43,12 @@ public:
 
 private:
     void buttonPress(const uint64_t& period);
-    void timeControl(const uint64_t& time);
-    uint8_t fadeUp(const uint64_t& time);
-    uint8_t fadeDown(const uint64_t& time);
+    void autoControl();
+    uint8_t fadeUp();
+    uint8_t fadeDown();
     bool isDay() const;
+    uint32_t getTimeAsSec(const uint16_t& hours, const uint16_t& minutes, const uint16_t& seconds) const;
+    LightStates getLightState() const;
 
 private:
     Modules* m_modules;
@@ -44,15 +57,13 @@ private:
     bool m_buttonSwitch;
     uint16_t m_buttonState;
 
-    States m_currentState;
+    ControlStates m_currentControlState;
 
-    uint8_t m_lightState;
-    bool m_prevLightManualState;
+    uint8_t m_lightValue;
 
+    LightStates m_prevLightManualState;
+    LightStates m_currentLightState;
     uint16_t m_time[3];
-    bool m_fadeFlag;
-    bool m_dayFlag;
-    uint64_t m_fadeStartTime;
 };
 
 

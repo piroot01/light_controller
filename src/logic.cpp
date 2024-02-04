@@ -5,12 +5,10 @@ Logic::Logic() :
     m_buttonTimer(0), 
     m_buttonSwitch(0), 
     m_buttonState(0), 
-    m_currentState(States::AUTO), 
-    m_lightState(0), 
-    m_prevLightManualState(0),
-    m_fadeFlag(0),
-    m_dayFlag(0),
-    m_fadeStartTime(0)
+    m_currentControlState(ControlStates::AUTO), 
+    m_lightValue(0), 
+    m_prevLightManualState(LightStates::OFF),
+    m_currentLightState(LightStates::OFF)
 {
 }
 
@@ -25,8 +23,8 @@ void Logic::implementation(uint64_t time)
 {
     m_modules->read(ModuleID::CLOCK, m_time);
 
-    if (m_currentState == States::AUTO)
-        this->timeControl(time);
+    if (m_currentControlState == ControlStates::AUTO)
+        this->autoControl();
 
     m_modules->read(ModuleID::BUTTON, &m_buttonState);
 
@@ -41,90 +39,93 @@ void Logic::implementation(uint64_t time)
         this->buttonPress(period);
         m_buttonSwitch = false;
     }
+
+    m_modules->write(ModuleID::LIGHT, (uint16_t)m_lightValue);
 }
 
 
-void Logic::timeControl(const uint64_t& time)
+void Logic::autoControl()
 {
-    m_dayFlag = this->isDay(); 
+    m_currentLightState = getLightState();
 
-    if (m_time[0] == SUNSET_TIME_HH and m_dayFlag == false)
+    Serial.print("light_Value: ");
+    Serial.println(m_lightValue);
+    Serial.print("lS: ");
+    Serial.println(m_currentLightState);
+
+    switch(m_currentLightState)
     {
-        m_fadeFlag = true;
-        m_fadeStartTime = time;
+        case LightStates::OFF:
+            m_lightValue = LIGHT_OFF;
+            break;
+        case LightStates::ON:
+            m_lightValue = LIGHT_ON;
+            break;
+        case LightStates::FADE_UP:
+            m_lightValue = this->fadeUp();
+            break;
+        case LightStates::FADE_DOWN:
+            m_lightValue = this->fadeDown();
+            break;
     }
-    else if (m_time[0] == SUNSET_TIME_HH and m_dayFlag == true)
-    {
-        m_fadeFlag = true;
-        m_fadeStartTime = time;
-    }
-
-    if (m_fadeFlag == true and m_dayFlag == true)
-        m_lightState = this->fadeUp(time);
-    else if (m_fadeFlag == true and m_dayFlag == false)
-        m_lightState = this->fadeDown(time);
-    else if (m_fadeFlag == false and m_dayFlag == true)
-        m_lightState = LIGHT_ON;
-    else if (m_fadeFlag == false and m_dayFlag == false)
-        m_lightState = LIGHT_OFF;
-
-    m_modules->write(ModuleID::LIGHT, m_lightState);
 }
 
 
-bool Logic::isDay() const
+uint32_t Logic::getTimeAsSec(const uint16_t& hours, const uint16_t& minutes, const uint16_t& seconds) const
 {
-    uint32_t timeNow = m_time[0] * 3600 + m_time[1] * 60 + m_time[0];
-    if (timeNow >= (uint32_t)SUNRISE_TIME_HH * 3600 and timeNow <= (uint32_t)SUNSET_TIME_HH * 3600)
-        return true;
-    return false;
+    return (uint32_t)hours * 3600 + (uint32_t)minutes * 60 + (uint32_t)seconds;
 }
 
 
-uint8_t Logic::fadeUp(const uint64_t& time)
+LightStates Logic::getLightState() const
 {
-    if (time - m_fadeStartTime > (uint64_t)FADE_TIME_MM * 60 * 1000)
-    {
-        m_fadeFlag = false;
-        return LIGHT_ON;
-    }
-    return (uint8_t)((time - m_fadeStartTime) / ((uint64_t)FADE_TIME_MM * 60 * 1000) * LIGHT_ON);
+    uint32_t timeNow = this->getTimeAsSec(m_time[0], m_time[1], m_time[2]);
+    if (timeNow >= this->getTimeAsSec(SUNRISE_TIME_HH, 0, 0) and timeNow < this->getTimeAsSec(SUNRISE_TIME_HH, FADE_TIME_MM, 0))
+        return LightStates::FADE_UP;
+    else if (timeNow >= this->getTimeAsSec(SUNRISE_TIME_HH, FADE_TIME_MM, 0) and timeNow < this->getTimeAsSec(SUNSET_TIME_HH, 0, 0))
+        return LightStates::ON;
+    else if (timeNow >= this->getTimeAsSec(SUNSET_TIME_HH, 0, 0) and timeNow < this->getTimeAsSec(SUNSET_TIME_HH, FADE_TIME_MM, 0))
+        return LightStates::FADE_DOWN;
+    else
+        return LightStates::OFF;
 }
 
 
-uint8_t Logic::fadeDown(const uint64_t& time)
+uint8_t Logic::fadeUp()
 {
-    if (time - m_fadeStartTime > (uint64_t)FADE_TIME_MM * 60 * 1000)
-    {
-        m_fadeFlag = false;
-        return LIGHT_OFF;
-    }
-    return LIGHT_ON - (uint8_t)((time - m_fadeStartTime) / ((uint64_t)FADE_TIME_MM * 60 * 1000) * LIGHT_ON);
+    uint32_t timeNow = this->getTimeAsSec(m_time[0], m_time[1], m_time[2]);
+    return (uint8_t)(LIGHT_ON * (timeNow - this->getTimeAsSec(SUNRISE_TIME_HH, 0, 0)) / (this->getTimeAsSec(0, FADE_TIME_MM, 0)));
+}
+
+
+uint8_t Logic::fadeDown()
+{
+    uint32_t timeNow = this->getTimeAsSec(m_time[0], m_time[1], m_time[2]);
+    return (uint8_t)(LIGHT_ON - LIGHT_ON * (timeNow - this->getTimeAsSec(SUNSET_TIME_HH, 0, 0)) / (this->getTimeAsSec(0, FADE_TIME_MM, 0)));
 }
 
 
 void Logic::buttonPress(const uint64_t& period)
 {
-    switch (m_currentState)
+    switch (m_currentControlState)
     {
-        case States::AUTO:
+        case ControlStates::AUTO:
             if ((uint16_t)period > TRANSITION_TIME)
             {
-                m_currentState = States::MANUAL;
-                m_lightState = (m_prevLightManualState == true) ? LIGHT_ON : LIGHT_OFF;
+                m_currentControlState = ControlStates::MANUAL;
+                m_lightValue = (m_prevLightManualState == LightStates::ON) ? LIGHT_ON : LIGHT_OFF;
             }
             break;
-        case States::MANUAL:
+        case ControlStates::MANUAL:
             if ((uint16_t)period > TRANSITION_TIME)
             {
-                m_currentState = States::AUTO;
+                m_currentControlState = ControlStates::AUTO;
             }
             else
             {
-                m_prevLightManualState = !m_prevLightManualState;
-                m_lightState = (m_prevLightManualState == true) ? LIGHT_ON : LIGHT_OFF;
+                m_prevLightManualState = (m_prevLightManualState == LightStates::OFF) ? LightStates::ON : LightStates::OFF;
+                m_lightValue = (m_prevLightManualState == LightStates::ON) ? LIGHT_ON : LIGHT_OFF;
             }
             break;
     }
-    m_modules->write(ModuleID::LIGHT, m_lightState);
 }
