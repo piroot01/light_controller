@@ -19,7 +19,6 @@ public:
 private:
     uint8_t m_pin;
     bool m_currentState;
-    uint32_t m_stateTime;
 
 };
 

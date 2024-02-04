@@ -10,9 +10,11 @@
 
 #define TRANSITION_TIME 1000
 
-#define SUNRISE_TIME_HH 8
+
+#define SUNRISE_TIME_HH 13
 #define SUNSET_TIME_HH 20
-#define FADE_TIME_MM 30
+#define FADE_TIME_MM 45
+
 
 #define LIGHT_ON 255
 #define LIGHT_OFF 0
@@ -22,6 +24,7 @@ enum ControlStates
 {
     AUTO = 0,
     MANUAL = 1
+
 };
 
 
@@ -31,6 +34,7 @@ enum LightStates
     ON = 1,
     FADE_UP = 2,
     FADE_DOWN = 3
+
 };
 
 
@@ -64,6 +68,7 @@ private:
     LightStates m_prevLightManualState;
     LightStates m_currentLightState;
     uint16_t m_time[3];
+
 };
 
 

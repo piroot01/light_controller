@@ -7,7 +7,6 @@
 App::App() :
     time(0)
 {
-    dummy = 0;
 }
 
 

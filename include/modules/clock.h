@@ -13,7 +13,6 @@ class Clock : public Module
 {
 public:
 
-    // initializer
     Clock();
     void update(Packet& packet) override;
 
@@ -21,5 +20,6 @@ private:
     RTClib m_rtc;
 
 };
+
 
 #endif

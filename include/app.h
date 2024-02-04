@@ -12,6 +12,7 @@
 #define BUTTON_PIN 5
 #define LIGHT_PIN 3
 
+
 class App
 {
 public:
@@ -24,7 +25,6 @@ private:
     Modules m_modules;
     Logic m_logic;
     uint64_t time;
-    uint16_t dummy;
 
 };
 

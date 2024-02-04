@@ -48,11 +48,6 @@ void Logic::autoControl()
 {
     m_currentLightState = getLightState();
 
-    Serial.print("light_Value: ");
-    Serial.println(m_lightValue);
-    Serial.print("lS: ");
-    Serial.println(m_currentLightState);
-
     switch(m_currentLightState)
     {
         case LightStates::OFF:
