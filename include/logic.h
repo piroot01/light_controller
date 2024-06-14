@@ -11,12 +11,12 @@
 #define TRANSITION_TIME 1000
 
 
-#define SUNRISE_TIME_HH 13
-#define SUNSET_TIME_HH 20
+#define SUNRISE_TIME_HH 7
+#define SUNSET_TIME_HH 21
 #define FADE_TIME_MM 45
 
 
-#define LIGHT_ON 255
+#define LIGHT_ON 240
 #define LIGHT_OFF 0
 
 
